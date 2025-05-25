@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quote Poster Maker</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Poppins&family=Pacifico&family=Roboto&family=Courier+New&family=Oswald&family=Playfair+Display&family=Indie+Flower&family=Lobster&family=Monoton&display=swap" rel="stylesheet">
+  <style>
+    .poster {
+      width: 100%;
+      max-width: 400px;
+      height: 600px;
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      margin: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    .quote-box {
+      padding: 15px;
+      border-radius: 12px;
+      position: absolute;
+      width: 90%;
+      left: 5%;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+    }
+    body {
+      background: linear-gradient(135deg, #fce4ec 20%, #b2dfdb 80%);
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 font-poppins">
+
+  <h1 class="text-4xl font-bold text-center text-pink-700 mb-6">🎨 Quote Poster Maker</h1>
+
+  <div class="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+    <!-- Controls -->
+    <div class="bg-white rounded-lg shadow-lg p-4 space-y-4">
+      <label class="block font-semibold text-pink-700">Choose a Quote:</label>
+      <select id="quoteSelect" class="w-full p-2 border rounded" onchange="updateQuote(this)">
+        <option value="">-- Select a Quote --</option>
+        <option value="Freedom is not given, it is taken. – Sarojini Naidu">Sarojini Naidu</option>
+        <option value="We must be the change we want to see. – Indira Gandhi">Indira Gandhi</option>
+        <option value="My religion is based on truth and non-violence. – Kasturba Gandhi">Kasturba Gandhi</option>
+        <option value="A woman is the full circle. – Sudha Murty">Sudha Murty</option>
+        <option value="I do not wish women to have power over men, but over themselves. – Savitribai Phule">Savitribai Phule</option>
+        <option value="The sky is not the limit for me. – Kalpana Chawla">Kalpana Chawla</option>
+        <option value="Success is not final, failure is not fatal. – Mary Kom">Mary Kom</option>
+        <option value="Courage is not the absence of fear, but the triumph over it. – Kiran Bedi">Kiran Bedi</option>
+        <option value="I'm proud to be a woman and a pilot. – Avani Chaturvedi">Avani Chaturvedi</option>
+        <option value="Leadership is about vision and responsibility. – Nirmala Sitharaman">Nirmala Sitharaman</option>
+      </select>
+
+      <textarea id="customQuote" rows="2" class="w-full p-2 border rounded" placeholder="Or type your own quote..." oninput="updateQuote(this)"></textarea>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold text-pink-700">Font Style:</label>
+          <select id="fontStyle" class="w-full p-2 border rounded" onchange="updateStyle()">
+            <option value="'Poppins', sans-serif">Poppins</option>
+            <option value="'Merriweather', serif">Merriweather</option>
+            <option value="'Pacifico', cursive">Pacifico</option>
+            <option value="'Roboto', sans-serif">Roboto</option>
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="'Oswald', sans-serif">Oswald</option>
+            <option value="'Playfair Display', serif">Playfair Display</option>
+            <option value="'Indie Flower', cursive">Indie Flower</option>
+            <option value="'Lobster', cursive">Lobster</option>
+            <option value="'Monoton', cursive">Monoton</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-pink-700">Font Color:</label>
+          <input type="color" id="fontColor" class="w-full h-10 border rounded" value="#ffffff" onchange="updateStyle()">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 items-center">
+        <div>
+          <label class="block font-semibold text-pink-700">Font Size:</label>
+          <input type="range" id="fontSize" min="16" max="40" value="24" class="w-full" oninput="updateStyle()">
+        </div>
+        <div class="flex items-center mt-6">
+          <input type="checkbox" id="transparentBox" class="mr-2" onchange="toggleTransparency()">
+          <label for="transparentBox" class="text-sm text-gray-700">Transparent Box</label>
+        </div>
+      </div>
+
+      <label class="block font-semibold text-pink-700">Quote Position:</label>
+      <div class="flex gap-4">
+        <button onclick="moveQuote('up')" class="bg-pink-500 text-white px-3 py-1 rounded">⬆️ Up</button>
+        <button onclick="moveQuote('down')" class="bg-pink-500 text-white px-3 py-1 rounded">⬇️ Down</button>
+      </div>
+
+      <label class="block font-semibold text-pink-700">Choose Background Image:</label>
+      <input type="file" id="bgUpload" accept="image/*" onchange="loadImage(event)" class="w-full">
+      <img id="bgPreview" class="mt-2 w-full h-32 object-cover rounded" alt="Background Preview" style="display:none;">
+
+      <label class="block font-semibold text-pink-700">Add Background Music:</label>
+      <select id="audioSelect" class="w-full p-2 border rounded" onchange="playAudio()">
+        <option value="">-- No Music --</option>
+        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">Inspiration Track</option>
+        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">Peaceful Melody</option>
+      </select>
+
+      <button onclick="resetPoster()" class="mt-4 bg-gray-300 text-black px-4 py-2 rounded">Reset Poster</button>
+    </div>
+
+    <!-- Poster Preview -->
+    <div class="flex flex-col items-center">
+      <div id="poster" class="poster rounded-lg shadow-lg text-white" style="background-image: url('https://source.unsplash.com/400x600/?woman,empowerment');">
+        <div id="quoteBox" class="quote-box text-lg top-1/2 -translate-y-1/2" style="font-family: 'Poppins', sans-serif;">
+          <p id="quoteText">Your quote will appear here.</p>
+        </div>
+      </div>
+      <button onclick="downloadPoster()" class="mt-4 bg-pink-600 text-white px-6 py-2 rounded hover:bg-pink-700 transition">Download Poster</button>
+    </div>
+  </div>
+
+  <audio id="bgAudio" loop></audio>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    function updateQuote(el) {
+      const quote = document.getElementById('quoteSelect').value || document.getElementById('customQuote').value;
+      document.getElementById('quoteText').innerText = quote;
+    }
+
+    function updateStyle() {
+      const font = document.getElementById('fontStyle').value;
+      const color = document.getElementById('fontColor').value;
+      const size = document.getElementById('fontSize').value;
+
+      const quoteBox = document.getElementById('quoteBox');
+      const quoteText = document.getElementById('quoteText');
+
+      quoteBox.style.fontFamily = font;
+      quoteText.style.color = color;
+      quoteText.style.fontSize = size + 'px';
+    }
+
+    function toggleTransparency() {
+      const quoteBox = document.getElementById('quoteBox');
+      if (document.getElementById('transparentBox').checked) {
+        quoteBox.classList.remove('bg-black', 'bg-opacity-40');
+      } else {
+        quoteBox.classList.add('bg-black', 'bg-opacity-40');
+      }
+    }
+
+    function moveQuote(direction) {
+      const quoteBox = document.getElementById('quoteBox');
+      const currentTop = quoteBox.style.top ? parseInt(quoteBox.style.top) : 50;
+      const newTop = direction === 'up' ? currentTop - 5 : currentTop + 5;
+      quoteBox.style.top = `${newTop}%`;
+    }
+
+    function loadImage(event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById('poster').style.backgroundImage = `url('${reader.result}')`;
+        document.getElementById('bgPreview').src = reader.result;
+        document.getElementById('bgPreview').style.display = 'block';
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function playAudio() {
+      const audio = document.getElementById('bgAudio');
+      const url = document.getElementById('audioSelect').value;
+      if (url) {
+        audio.src = url;
+        audio.play();
+      } else {
+        audio.pause();
+        audio.src = '';
+      }
+    }
+
+    function downloadPoster() {
+      html2canvas(document.getElementById("poster")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "quote_poster.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+
+    function resetPoster() {
+      document.getElementById('quoteText').innerText = "Your quote will appear here.";
+      document.getElementById('bgPreview').style.display = 'none';
+      document.getElementById('bgUpload').value = '';
+      document.getElementById('quoteSelect').selectedIndex = 0;
+      document.getElementById('customQuote').value = '';
+      document.getElementById('fontStyle').value = "'Poppins', sans-serif";
+      document.getElementById('fontColor').value = "#ffffff";
+      document.getElementById('fontSize').value = 24;
+      document.getElementById('transparentBox').checked = false;
+      updateStyle();
+    }
+  </script>
+</body>
+</html>
