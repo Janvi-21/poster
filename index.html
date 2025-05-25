@@ -156,19 +156,28 @@
 
     function moveQuote(direction) {
       const quoteBox = document.getElementById('quoteBox');
-      const currentTop = quoteBox.style.top ? parseInt(quoteBox.style.top) : 50;
+      const currentTop = quoteBox.style.top ? parseInt(quoteBox.style.top) : 50; // Default to 50% if not set
       const newTop = direction === 'up' ? currentTop - 5 : currentTop + 5;
-      quoteBox.style.top = `${newTop}%`;
+
+      // Ensure the quote box stays within the bounds of the poster
+      if (newTop >= 0 && newTop <= 100) {
+        quoteBox.style.top = `${newTop}%`;
+      }
     }
 
     function loadImage(event) {
-      const reader = new FileReader();
-      reader.onload = function () {
-        document.getElementById('poster').style.backgroundImage = `url('${reader.result}')`;
-        document.getElementById('bgPreview').src = reader.result;
-        document.getElementById('bgPreview').style.display = 'block';
-      };
-      reader.readAsDataURL(event.target.files[0]);
+      const file = event.target.files[0]; // Get the first file
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById('poster').style.backgroundImage = `url('${e.target.result}')`;
+          document.getElementById('bgPreview').src = e.target.result; // Set the preview image
+          document.getElementById('bgPreview').style.display = 'block'; // Show the preview
+        };
+        reader.readAsDataURL(file); // Read the file as a data URL
+      } else {
+        console.error("No file selected or file is not valid.");
+      }
     }
 
     function playAudio() {
